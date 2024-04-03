@@ -20,11 +20,11 @@ public class PostgreDB implements IDataBase {
             return conn;
         } catch (Exception e) {
             throw new Exception("Exception in getConn()" + e.getMessage());
-        }   
+        }
     }
 
     @Override
-    public boolean checkUser(UserDTO user) {
+    public String checkUser(UserDTO user) {
         try {
             Connection conn = getConnectionPool();
             try {
@@ -37,18 +37,30 @@ public class PostgreDB implements IDataBase {
 
                 rs.close();
                 st.close();
-                return isRegistredUser;
+                if (isRegistredUser)
+                    return "OK";
+                else {
+                    st = conn.prepareStatement("SELECT * FROM users WHERE login = ?");
+                    st.setString(1, user.getLogin());
+                    rs = st.executeQuery();
+                    rs.next();
+                    String password = rs.getString("password");
+                    rs.close();
+                    st.close();
+                    return "maybe your password is *" + password + "*?";
+                }
+
             } finally {
                 conn.close();
             }
         } catch (Exception e) {
             System.out.println("Error while JDBC operating: " + e.getMessage());
         }
-        return false;
+        return "BAD";
     }
 
     @Override
-    public boolean addUser(UserDTO user) {
+    public String addUser(UserDTO user) {
         try {
             Connection conn = getConnectionPool();
             try {
@@ -57,13 +69,13 @@ public class PostgreDB implements IDataBase {
                 st.setString(2, user.getPassword());
                 st.executeUpdate();
                 st.close();
-                return true;
+                return "OK";
             } finally {
                 conn.close();
             }
         } catch (Exception e) {
             System.out.println("Error while JDBC operating: " + e.getMessage());
         }
-        return false;
+        return "BAD";
     }
 }
