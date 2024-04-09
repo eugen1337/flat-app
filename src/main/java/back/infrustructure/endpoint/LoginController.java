@@ -7,8 +7,9 @@ import jakarta.ws.rs.core.Response;
 import com.google.gson.Gson;
 
 import back.DTO.UserDTO;
-import back.app.App;
 import back.app.IApp;
+import back.infrustructure.qualifiers.Built;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -16,7 +17,9 @@ import jakarta.ws.rs.Path;
 
 @Path("/login")
 public class LoginController {
-    private IApp app = new App();
+    @Inject
+    @Built
+    private IApp app;
 
     @GET
     @Produces("text/plain")

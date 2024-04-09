@@ -6,7 +6,7 @@ import back.infrustructure.storage.PostgreDB;
 import back.infrustructure.tokenManager.ITokenManager;
 import back.infrustructure.tokenManager.TokenManager;
 
-public class App implements IApp {
+public class App implements IApp, IDBUsing, ITMUsing {
 
     private IDataBase db = new PostgreDB();
     private ITokenManager tm = new TokenManager();
@@ -37,5 +37,15 @@ public class App implements IApp {
             token = tm.generateToken(user.getLogin(), user.getPassword());
 
         return "{\"status\":\"" + result + "\", \"token\":\"" + token + "\" }";
+    }
+
+    @Override
+    public void useTM(ITokenManager tm) {
+        this.tm = tm;
+    }
+
+    @Override
+    public void useDB(IDataBase db) {
+        this.db = db;
     }
 }
