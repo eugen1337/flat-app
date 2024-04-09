@@ -21,7 +21,12 @@ public class App implements IApp {
 
     @Override
     public String register(UserDTO user) {
-        // TODO Auto-generated method stub
-        return null;
+        // String token = tm.generateToken(login, password);
+        String token = "OKTOKEN";
+        System.out.println("APP register, token = " + token);
+
+        String result = db.addUser(user);
+        System.out.println("db result register: " + result);
+        return "{\"status\":\"" + result + "\", \"token\":\"" + token + "\" }";
     }
 }

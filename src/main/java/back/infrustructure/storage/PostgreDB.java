@@ -3,14 +3,27 @@ package back.infrustructure.storage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import back.DTO.UserDTO;
+import back.infrustructure.storage.entities.UserEntity;
+import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
+import jakarta.transaction.UserTransaction;
 
 public class PostgreDB implements IDataBase {
     private DataSource ds;
+
+    private EntityManager entityManager;
+
+    @Resource
+    private UserTransaction userTransaction;
 
     private Connection getConnectionPool() throws Exception {
         try {
@@ -33,19 +46,15 @@ public class PostgreDB implements IDataBase {
                 st.setString(2, user.getPassword());
                 ResultSet rs = st.executeQuery();
 
-                boolean isRegistredUser = rs.next();
-
-                rs.close();
-                st.close();
-                if (isRegistredUser)
+                if (rs.next()) {
+                    st.close();
                     return "OK";
-                else {
+                } else {
                     st = conn.prepareStatement("SELECT * FROM users WHERE login = ?");
                     st.setString(1, user.getLogin());
                     rs = st.executeQuery();
                     rs.next();
                     String password = rs.getString("password");
-                    rs.close();
                     st.close();
                     return "maybe your password is *" + password + "*?";
                 }
@@ -61,21 +70,64 @@ public class PostgreDB implements IDataBase {
 
     @Override
     public String addUser(UserDTO user) {
+
         try {
-            Connection conn = getConnectionPool();
-            try {
-                PreparedStatement st = conn.prepareStatement("INSERT INTO users (login, password) VALUES (?, ?)");
-                st.setString(1, user.getLogin());
-                st.setString(2, user.getPassword());
-                st.executeUpdate();
-                st.close();
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("flat-pu");
+            entityManager = emf.createEntityManager();
+
+            InitialContext context = new InitialContext();
+            userTransaction = (UserTransaction) context.lookup("java:comp/UserTransaction");
+
+            userTransaction.begin();
+            entityManager.joinTransaction();
+
+            Query query = entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.login = :username")
+                    .setParameter("username", user.getLogin());
+
+            List<UserEntity> persons = query.getResultList();
+
+            if (persons == null || persons.isEmpty()) {
+                UserEntity userEntity = new UserEntity();
+                userEntity.setLogin(user.getLogin());
+                userEntity.setPassword(user.getPassword());
+
+                entityManager.persist(userEntity);
+                userTransaction.commit();
                 return "OK";
-            } finally {
-                conn.close();
-            }
+            } else
+                return "login already used";
+
         } catch (Exception e) {
-            System.out.println("Error while JDBC operating: " + e.getMessage());
+            System.out.println("Error while JPA operating: " + e.getMessage());
         }
         return "BAD";
     }
+
 }
+
+// private int retrieveRowsCountByJPA() throws Exception {
+// try {
+// userTransaction.begin();
+// entityManager.joinTransaction();
+
+// List<EPerson> persons = entityManager.createQuery("SELECT p FROM EPerson p",
+// EPerson.class).getResultList();
+
+// /*
+// * EPerson personFind = entityManager.find(EPerson.class,new Integer(2));
+// * personFind.setPersonName("Person_Find");
+// * entityManager.merge(personFind);
+// *
+// * EPerson personPersist = new EPerson();
+// * //personPersist.setPersonID(new Integer(3));
+// * personPersist.setPersonName("Person_Persist");
+// * entityManager.persist(personPersist);
+// */
+
+// userTransaction.commit();
+
+// return persons.size();
+// } catch (Exception e) {
+// throw new Exception("Error while JPA operating: " + e.getMessage());
+// }
+// }
