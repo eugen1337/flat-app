@@ -25,6 +25,19 @@ public class PostgreDB implements IDataBase {
     @Resource
     private UserTransaction userTransaction;
 
+    public PostgreDB() {
+        try {
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("flat-pu");
+            entityManager = emf.createEntityManager();
+
+            InitialContext context = new InitialContext();
+            userTransaction = (UserTransaction) context.lookup("java:comp/UserTransaction");
+        } catch (Exception e) {
+            System.out.println("Error while Persistence creating: " + e.getMessage());
+        }
+
+    }
+
     private Connection getConnectionPool() throws Exception {
         try {
             InitialContext initialContext = new InitialContext();
@@ -72,12 +85,6 @@ public class PostgreDB implements IDataBase {
     public String addUser(UserDTO user) {
 
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("flat-pu");
-            entityManager = emf.createEntityManager();
-
-            InitialContext context = new InitialContext();
-            userTransaction = (UserTransaction) context.lookup("java:comp/UserTransaction");
-
             userTransaction.begin();
             entityManager.joinTransaction();
 
