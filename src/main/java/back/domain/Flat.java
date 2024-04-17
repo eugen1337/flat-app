@@ -1,3 +1,5 @@
+package back.domain;
+
 public class Flat {
     private double area;
     private double perimeter;

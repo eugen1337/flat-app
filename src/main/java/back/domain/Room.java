@@ -1,8 +1,11 @@
+package back.domain;
+
 public class Room {
     private double perimeter;
     private double area;
+    
     private int number;
-
+    
     private int[] wallsLength;
     private String type;
     private int level;
