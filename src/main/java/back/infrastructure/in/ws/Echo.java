@@ -7,7 +7,7 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
-@ServerEndpoint("/echo")
+@ServerEndpoint("/testEcho")
 public class Echo {
 
     @OnOpen

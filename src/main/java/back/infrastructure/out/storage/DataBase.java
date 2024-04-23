@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 import back.DTO.UserDTO;
 import back.domain.Room;
 import back.infrastructure.out.storage.entities.ERoom;
-import back.infrastructure.out.storage.entities.UserEntity;
+import back.infrastructure.out.storage.entities.EUser;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -91,13 +91,13 @@ public class DataBase implements IDataBase {
             userTransaction.begin();
             entityManager.joinTransaction();
 
-            Query query = entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.login = :username")
+            Query query = entityManager.createQuery("SELECT u FROM EUser u WHERE u.login = :username")
                     .setParameter("username", user.getLogin());
 
-            List<UserEntity> persons = query.getResultList();
+            List<EUser> persons = query.getResultList();
 
             if (persons == null || persons.isEmpty()) {
-                UserEntity userEntity = new UserEntity();
+                EUser userEntity = new EUser();
                 userEntity.setLogin(user.getLogin());
                 userEntity.setPassword(user.getPassword());
 
@@ -119,10 +119,10 @@ public class DataBase implements IDataBase {
             userTransaction.begin();
             entityManager.joinTransaction();
 
-            Query query = entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.login = :username")
+            Query query = entityManager.createQuery("SELECT u FROM EUser u WHERE u.login = :username")
                     .setParameter("username", login);
 
-            List<UserEntity> persons = query.getResultList();
+            List<EUser> persons = query.getResultList();
 
             if (persons == null || persons.isEmpty())
                 return "User doesnt exist";
