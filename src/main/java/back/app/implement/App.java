@@ -1,21 +1,26 @@
 package back.app.implement;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
+import java.text.DateFormat;  
+import java.text.SimpleDateFormat;  
 
 import back.DTO.UserDTO;
 import back.app.api.IApp;
 import back.app.api.IDBUsing;
 import back.app.api.ITMUsing;
+import back.app.api.ITransporterAssign;
 import back.domain.Room;
 import back.infrastructure.out.storage.IDataBase;
-import back.infrastructure.out.storage.DataBase;
 import back.infrastructure.tokenManager.ITokenManager;
-import back.infrastructure.tokenManager.TokenManager;
+import back.infrastructure.websocket.ITransporter;
 
-public class App implements IApp, IDBUsing, ITMUsing {
+public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
 
-    private IDataBase db = new DataBase();
-    private ITokenManager tm = new TokenManager();
+    private IDataBase db;
+    private ITokenManager tm;
+    private ITransporter transporter;
 
     @Override
     public String login(UserDTO user) {
@@ -38,7 +43,7 @@ public class App implements IApp, IDBUsing, ITMUsing {
 
         if (result == "OK")
             token = tm.generateToken(user.getLogin(), user.getPassword());
-            
+
         System.out.println("db result " + result);
         System.out.println("APP login, token = " + token);
 
@@ -75,6 +80,21 @@ public class App implements IApp, IDBUsing, ITMUsing {
         // return db.isRegistredUser(tokenInfo.get("username"),
         // tokenInfo.get("passwd"));
         return true;
+    }
+
+    @Override
+    public void useTransporter(ITransporter transporter) {
+        this.transporter = transporter;
+    }
+
+    @Override
+    public void sendUpdate() {
+        Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        String strDate = dateFormat.format(date);
+        String login = "admin";
+        String message = strDate;
+        transporter.sendToClient(login, message);
     }
 
 }
