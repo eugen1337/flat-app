@@ -1,19 +1,14 @@
 package back.infrastructure.out.storage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.naming.InitialContext;
-import javax.sql.DataSource;
 
 import back.DTO.UserDTO;
 import back.domain.Room;
 import back.infrastructure.out.storage.entities.ERoom;
 import back.infrastructure.out.storage.entities.EUser;
-import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -21,65 +16,36 @@ import jakarta.persistence.Query;
 import jakarta.transaction.UserTransaction;
 
 public class DataBase implements IDataBase {
-    private DataSource ds;
 
     private EntityManager entityManager;
-
-    @Resource
-    private UserTransaction userTransaction;
 
     public DataBase() {
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("flat-pu");
             entityManager = emf.createEntityManager();
-
-            InitialContext context = new InitialContext();
-            userTransaction = (UserTransaction) context.lookup("java:comp/UserTransaction");
         } catch (Exception e) {
             System.out.println("Error while Persistence creating: " + e.getMessage());
         }
 
     }
 
-    private Connection getConnectionPool() throws Exception {
-        try {
-            InitialContext initialContext = new InitialContext();
-            ds = (DataSource) initialContext.lookup("local_pg_pool");
-            Connection conn = ds.getConnection();
-            return conn;
-        } catch (Exception e) {
-            throw new Exception("Exception in getConn()" + e.getMessage());
-        }
-    }
-
     @Override
     public String checkUser(UserDTO user) {
+
         try {
-            Connection conn = getConnectionPool();
-            try {
-                PreparedStatement st = conn.prepareStatement("SELECT * FROM users WHERE login = ? AND password = ?");
-                st.setString(1, user.getLogin());
-                st.setString(2, user.getPassword());
-                ResultSet rs = st.executeQuery();
+            Query query = entityManager
+                    .createQuery("SELECT u FROM EUser u WHERE u.login = :username and u.password = :password")
+                    .setParameter("username", user.getLogin()).setParameter("password", user.getPassword());
 
-                if (rs.next()) {
-                    st.close();
-                    return "OK";
-                } else {
-                    st = conn.prepareStatement("SELECT * FROM users WHERE login = ?");
-                    st.setString(1, user.getLogin());
-                    rs = st.executeQuery();
-                    rs.next();
-                    String password = rs.getString("password");
-                    st.close();
-                    return "maybe your password is *" + password + "*?";
-                }
+            List<EUser> persons = query.getResultList();
 
-            } finally {
-                conn.close();
-            }
+            if (persons == null || persons.isEmpty()) {
+                return "user doesnt exist";
+            } else
+                return "OK";
+
         } catch (Exception e) {
-            System.out.println("Error while JDBC operating: " + e.getMessage());
+            System.out.println("Error while JPA operating: " + e.getMessage());
         }
         return "BAD";
     }
@@ -88,6 +54,8 @@ public class DataBase implements IDataBase {
     public String addUser(UserDTO user) {
 
         try {
+            UserTransaction userTransaction = (UserTransaction) new InitialContext()
+                    .lookup("java:comp/UserTransaction");
             userTransaction.begin();
             entityManager.joinTransaction();
 
@@ -116,6 +84,8 @@ public class DataBase implements IDataBase {
     @Override
     public String addRoom(Room room, String login) {
         try {
+            UserTransaction userTransaction = (UserTransaction) new InitialContext()
+                    .lookup("java:comp/UserTransaction");
             userTransaction.begin();
             entityManager.joinTransaction();
 
@@ -147,10 +117,13 @@ public class DataBase implements IDataBase {
             roomEntity.setWidth(width);
 
             entityManager.persist(roomEntity);
+
+            entityManager.getTransaction().commit();
             userTransaction.commit();
             return "OK";
 
         } catch (Exception e) {
+            entityManager.getTransaction().rollback();
             System.out.println("Error while JPA operating: " + e.getMessage());
         }
         return "BAD";
