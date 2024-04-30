@@ -17,4 +17,5 @@ public interface IApp {
     Map<String, String> getUserInfo(String token);
 
     public void sendUpdate();
+    public String getArea();
 }

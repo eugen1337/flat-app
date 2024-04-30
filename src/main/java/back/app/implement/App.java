@@ -105,4 +105,10 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
         }
     }
 
+    @Override
+    public String getArea() {
+        
+        throw new UnsupportedOperationException("Unimplemented method 'getArea'");
+    }
+
 }

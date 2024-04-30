@@ -10,6 +10,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
@@ -41,6 +42,35 @@ public class PlansController {
             String login = app.getUserInfo(token).get("login");
 
             String res = app.setRoomPlan(room, login);
+            if (res != null) {
+                return Response.ok(res).build();
+            } else {
+                throw new Exception("invalid");
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @Path("/area")
+    @POST
+    @Consumes("application/json")
+    @Produces("text/plain")
+    public Response setRoomPlan(@QueryParam("length") String length, @QueryParam("width") String width) {
+        Gson gson = new Gson();
+        try {
+            String token = headers.getHeaderString(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+
+            if (!app.validateToken(token)) {
+                return Response.status(Response.Status.UNAUTHORIZED).entity("Ошибка авторизации").build();
+            }
+
+            Room room = new Room();
+            room.setWallsLength(new int[] { Integer.parseInt(length), Integer.parseInt(length), Integer.parseInt(width),
+                    Integer.parseInt(width) });
+                
+
+            String res = app.getArea(room);
             if (res != null) {
                 return Response.ok(res).build();
             } else {
