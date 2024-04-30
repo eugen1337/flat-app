@@ -3,8 +3,8 @@ package back.app.implement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-import java.text.DateFormat;  
-import java.text.SimpleDateFormat;  
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import back.DTO.UserDTO;
 import back.app.api.IApp;
@@ -13,8 +13,8 @@ import back.app.api.ITMUsing;
 import back.app.api.ITransporterAssign;
 import back.domain.Room;
 import back.infrastructure.out.storage.IDataBase;
-import back.infrastructure.tokenManager.ITokenManager;
-import back.infrastructure.websocket.ITransporter;
+import back.infrastructure.out.websocket.ITransporter;
+import back.infrastructure.utils.tokenManager.ITokenManager;
 
 public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
 
@@ -89,12 +89,20 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
 
     @Override
     public void sendUpdate() {
-        Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-        String strDate = dateFormat.format(date);
-        String login = "admin";
-        String message = strDate;
-        transporter.sendToClient(login, message);
+        for (String login : transporter.getActiveClientNames()) {
+            System.out.println("active clint: " + login);
+            StringBuilder message = new StringBuilder();
+            message.append("{\"date\" :\"");
+
+            Date date = Calendar.getInstance().getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String strDate = dateFormat.format(date);
+
+            message.append(strDate);
+            message.append("\"}");
+
+            transporter.sendToClient(login, message.toString());
+        }
     }
 
 }
