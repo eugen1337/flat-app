@@ -1,4 +1,4 @@
-package back.infrastructure.websocket;
+package back.infrastructure.out.websocket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,6 @@ public class WSController implements ITransporter {
         } catch (Exception e) {
             System.out.println("wscontroller error:" + e.getMessage());
         }
-
     }
 
     @Override
@@ -46,12 +45,16 @@ public class WSController implements ITransporter {
     public void connectionClosed(Session session) {
         String login = mapSessionLogin.remove(session);
         mapLoginSession.remove(login);
+
+        System.out.println("Delete ws client: " + login);
     }
 
     @OnMessage
     public void addClient(Session session, String login) {
         mapLoginSession.put(login, session);
         mapSessionLogin.put(session, login);
+        
+        System.out.println("New ws client: " + login);
     }
 
 }

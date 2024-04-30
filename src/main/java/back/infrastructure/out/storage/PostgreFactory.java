@@ -1,6 +1,6 @@
 package back.infrastructure.out.storage;
 
-import back.infrastructure.qualifiers.Product;
+import back.infrastructure.utils.qualifiers.Product;
 import jakarta.enterprise.inject.Produces;
 
 public class PostgreFactory {

@@ -157,9 +157,3 @@ public class DataBase implements IDataBase {
 // */
 
 // userTransaction.commit();
-
-// return persons.size();
-// } catch (Exception e) {
-// throw new Exception("Error while JPA operating: " + e.getMessage());
-// }
-// }

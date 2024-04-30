@@ -1,4 +1,4 @@
-package back.infrastructure;
+package back.infrastructure.out.websocket;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -11,7 +11,7 @@ import jakarta.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 import back.app.api.IApp;
-import back.infrastructure.qualifiers.Built;
+import back.infrastructure.utils.qualifiers.Built;
 
 
 @Singleton

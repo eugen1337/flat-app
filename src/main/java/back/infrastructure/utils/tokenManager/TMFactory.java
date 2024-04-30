@@ -1,4 +1,4 @@
-package back.infrastructure.tokenManager;
+package back.infrastructure.utils.tokenManager;
 
 public class TMFactory {
     private static ITokenManager instance = null;

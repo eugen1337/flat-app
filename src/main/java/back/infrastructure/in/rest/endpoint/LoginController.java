@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 
 import back.DTO.UserDTO;
 import back.app.api.IApp;
-import back.infrastructure.qualifiers.Built;
+import back.infrastructure.utils.qualifiers.Built;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;

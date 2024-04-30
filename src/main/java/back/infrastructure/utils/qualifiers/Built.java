@@ -1,4 +1,4 @@
-package back.infrastructure.qualifiers;
+package back.infrastructure.utils.qualifiers;
 
 import jakarta.inject.Qualifier;
 

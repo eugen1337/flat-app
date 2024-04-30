@@ -1,4 +1,4 @@
-package back.infrastructure.tokenManager;
+package back.infrastructure.utils.tokenManager;
 
 import java.util.Map;
 

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 import back.app.api.IApp;
 import back.domain.Room;
-import back.infrastructure.qualifiers.Built;
+import back.infrastructure.utils.qualifiers.Built;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;

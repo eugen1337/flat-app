@@ -1,14 +1,14 @@
-package back.infrastructure;
+package back.infrastructure.utils;
 
 import back.app.api.IApp;
 import back.app.api.IDBUsing;
 import back.app.api.ITMUsing;
 import back.app.api.ITransporterAssign;
 import back.infrastructure.out.storage.IDataBase;
-import back.infrastructure.qualifiers.Built;
-import back.infrastructure.qualifiers.Product;
-import back.infrastructure.tokenManager.ITokenManager;
-import back.infrastructure.websocket.ITransporter;
+import back.infrastructure.out.websocket.ITransporter;
+import back.infrastructure.utils.qualifiers.Built;
+import back.infrastructure.utils.qualifiers.Product;
+import back.infrastructure.utils.tokenManager.ITokenManager;
 import jakarta.enterprise.inject.Default;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;

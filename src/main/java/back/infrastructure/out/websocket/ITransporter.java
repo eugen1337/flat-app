@@ -1,4 +1,4 @@
-package back.infrastructure.websocket;
+package back.infrastructure.out.websocket;
 
 import java.util.List;
 
