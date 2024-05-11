@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import back.DTO.UserDTO;
@@ -110,12 +111,21 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
             Factory roomFactory = new Factory();
             IRoomCalculator areaCalculator = roomFactory.createRoomCalculator();
             areaCalculator.calc(room);
-            String area = Double.toString(room.getArea());
+
+            DecimalFormat decimalFormat = new DecimalFormat("#.###");
+
+            String area = decimalFormat.format( room.getArea());
+            String perimeter = decimalFormat.format( room.getPerimeter());
 
             System.out.print("Area = " + area);
+            System.out.print("Perimeter = " + perimeter);
 
             message.append("{\"area\" :\"");
             message.append(area);
+            message.append("\"");
+
+            message.append(",\"perimeter\" :\"");
+            message.append(perimeter);
             message.append("\"}");
 
             transporter.sendToClient(login, message.toString());

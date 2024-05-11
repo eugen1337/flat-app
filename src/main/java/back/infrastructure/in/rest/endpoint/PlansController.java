@@ -64,8 +64,11 @@ public class PlansController {
             }
 
             Room room = new Room();
-            room.setWallsLength(new int[] { Integer.parseInt(length), Integer.parseInt(length), Integer.parseInt(width),
-                    Integer.parseInt(width) });
+            room.setWallsLength(new double[] {
+                    Double.parseDouble(length) / 100,
+                    Double.parseDouble(length) / 100,
+                    Double.parseDouble(width) / 100,
+                    Double.parseDouble(width) / 100 });
             room.setType("rectangle");
 
             String login = app.getUserInfo(token).get("login");

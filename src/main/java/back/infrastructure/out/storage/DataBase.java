@@ -99,13 +99,13 @@ public class DataBase implements IDataBase {
 
             int userId = persons.get(0).getId();
 
-            int length = Arrays.stream(room.getWallsLength())
+            double length = Arrays.stream(room.getWallsLength())
                     .min()
-                    .getAsInt();
+                    .getAsDouble();
 
-            int width = Arrays.stream(room.getWallsLength())
+            double width = Arrays.stream(room.getWallsLength())
                     .max()
-                    .getAsInt();
+                    .getAsDouble();
 
             ERoom roomEntity = new ERoom();
             roomEntity.setType(room.getType());
@@ -113,8 +113,8 @@ public class DataBase implements IDataBase {
             // roomEntity.setWallsLength(room.getWallsLength());
             roomEntity.setUserId(userId);
 
-            roomEntity.setLength(length);
-            roomEntity.setWidth(width);
+            roomEntity.setLength((int) length * 100);
+            roomEntity.setWidth((int) width * 100);
 
             entityManager.persist(roomEntity);
 

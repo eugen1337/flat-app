@@ -6,15 +6,15 @@ public class Room {
     
     private int number;
     
-    private int[] wallsLength;
+    private double[] wallsLength;
     private String type;
     private int level;
 
-    public int[] getWallsLength() {
+    public double[] getWallsLength() {
         return wallsLength;
     }
 
-    public void setWallsLength(int[] wallsLength) {
+    public void setWallsLength(double[] wallsLength) {
         this.wallsLength = wallsLength;
     }
 
