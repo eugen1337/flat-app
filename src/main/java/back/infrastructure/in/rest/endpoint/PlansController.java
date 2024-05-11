@@ -7,6 +7,7 @@ import back.domain.Room;
 import back.infrastructure.utils.qualifiers.Built;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -53,11 +54,8 @@ public class PlansController {
     }
 
     @Path("/area")
-    @POST
-    @Consumes("application/json")
-    @Produces("text/plain")
-    public Response setRoomPlan(@QueryParam("length") String length, @QueryParam("width") String width) {
-        Gson gson = new Gson();
+    @GET
+    public Response getArea(@QueryParam("length") String length, @QueryParam("width") String width) {
         try {
             String token = headers.getHeaderString(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
 
@@ -68,9 +66,10 @@ public class PlansController {
             Room room = new Room();
             room.setWallsLength(new int[] { Integer.parseInt(length), Integer.parseInt(length), Integer.parseInt(width),
                     Integer.parseInt(width) });
-                
+            room.setType("rectangle");
 
-            String res = app.getArea(room);
+            String login = app.getUserInfo(token).get("login");
+            String res = app.getArea(room, login);
             if (res != null) {
                 return Response.ok(res).build();
             } else {

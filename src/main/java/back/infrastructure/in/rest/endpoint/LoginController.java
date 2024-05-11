@@ -1,6 +1,5 @@
 package back.infrastructure.in.rest.endpoint;
 
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
@@ -10,7 +9,6 @@ import back.DTO.UserDTO;
 import back.app.api.IApp;
 import back.infrastructure.utils.qualifiers.Built;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

@@ -9,18 +9,23 @@ import java.text.SimpleDateFormat;
 import back.DTO.UserDTO;
 import back.app.api.IApp;
 import back.app.api.IDBUsing;
+import back.app.api.IExecAssign;
 import back.app.api.ITMUsing;
 import back.app.api.ITransporterAssign;
+import back.domain.Factory;
 import back.domain.Room;
+import back.domain.api.IRoomCalculator;
+import back.infrastructure.out.executor.IExecutor;
 import back.infrastructure.out.storage.IDataBase;
 import back.infrastructure.out.websocket.ITransporter;
 import back.infrastructure.utils.tokenManager.ITokenManager;
 
-public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
+public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecAssign {
 
     private IDataBase db;
     private ITokenManager tm;
     private ITransporter transporter;
+    private IExecutor executor;
 
     @Override
     public String login(UserDTO user) {
@@ -51,16 +56,6 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
     }
 
     @Override
-    public void useTM(ITokenManager tm) {
-        this.tm = tm;
-    }
-
-    @Override
-    public void useDB(IDataBase db) {
-        this.db = db;
-    }
-
-    @Override
     public String setRoomPlan(Room room, String login) {
         String result = db.addRoom(room, login);
 
@@ -83,11 +78,6 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
     }
 
     @Override
-    public void useTransporter(ITransporter transporter) {
-        this.transporter = transporter;
-    }
-
-    @Override
     public void sendUpdate() {
         for (String login : transporter.getActiveClientNames()) {
             System.out.println("active clint: " + login);
@@ -106,9 +96,51 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign {
     }
 
     @Override
-    public String getArea() {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'getArea'");
+    public String getArea(Room room, String login) {
+        executor.execute(() -> {
+            try {
+                System.out.print("Thread.sleep(10); ");
+                Thread.sleep(10);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+            StringBuilder message = new StringBuilder();
+
+            Factory roomFactory = new Factory();
+            IRoomCalculator areaCalculator = roomFactory.createRoomCalculator();
+            areaCalculator.calc(room);
+            String area = Double.toString(room.getArea());
+
+            System.out.print("Area = " + area);
+
+            message.append("{\"area\" :\"");
+            message.append(area);
+            message.append("\"}");
+
+            transporter.sendToClient(login, message.toString());
+        });
+        return "OK";
+    }
+
+    @Override
+    public void useTM(ITokenManager tm) {
+        this.tm = tm;
+    }
+
+    @Override
+    public void useDB(IDataBase db) {
+        this.db = db;
+    }
+
+    @Override
+    public void useTransporter(ITransporter transporter) {
+        this.transporter = transporter;
+    }
+
+    @Override
+    public void useExecutor(IExecutor executor) {
+        this.executor = executor;
     }
 
 }

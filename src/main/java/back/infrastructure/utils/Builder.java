@@ -2,8 +2,10 @@ package back.infrastructure.utils;
 
 import back.app.api.IApp;
 import back.app.api.IDBUsing;
+import back.app.api.IExecAssign;
 import back.app.api.ITMUsing;
 import back.app.api.ITransporterAssign;
+import back.infrastructure.out.executor.IExecutor;
 import back.infrastructure.out.storage.IDataBase;
 import back.infrastructure.out.websocket.ITransporter;
 import back.infrastructure.utils.qualifiers.Built;
@@ -30,12 +32,17 @@ public class Builder {
     @Default
     private ITransporter transporter;
 
+    @Inject
+    @Default
+    private IExecutor executor;
+
     @Produces
     @Built
     public IApp buildApp() {
         ((IDBUsing) app).useDB(db);
         ((ITMUsing) app).useTM(tm);
         ((ITransporterAssign) app).useTransporter(transporter);
+        ((IExecAssign) app).useExecutor(executor);
 
         return app;
     }

@@ -131,7 +131,6 @@ public class DataBase implements IDataBase {
 
     @Override
     public Room getRoom(Room room, String login) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getRoom'");
     }
 
