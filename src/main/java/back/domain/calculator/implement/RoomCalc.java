@@ -1,9 +1,9 @@
-package back.domain.implement;
+package back.domain.calculator.implement;
 
 import java.util.Arrays;
 
-import back.domain.Room;
-import back.domain.api.IRoomCalculator;
+import back.domain.calculator.Room;
+import back.domain.calculator.api.IRoomCalculator;
 
 public class RoomCalc implements IRoomCalculator {
     @Override

@@ -1,8 +1,8 @@
-package back.domain.implement;
+package back.domain.calculator.implement;
 
-import back.domain.Flat;
-import back.domain.Room;
-import back.domain.api.IFlatCalculator;
+import back.domain.calculator.Flat;
+import back.domain.calculator.Room;
+import back.domain.calculator.api.IFlatCalculator;
 
 public class FlatCalc implements IFlatCalculator {
     @Override

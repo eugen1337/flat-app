@@ -1,6 +1,6 @@
-package back.domain.api;
+package back.domain.calculator.api;
 
-import back.domain.Flat;
+import back.domain.calculator.Flat;
 
 public interface IFlatCalculator {
     public Flat calc(Flat flat);

@@ -1,4 +1,4 @@
-package back.domain;
+package back.domain.calculator;
 
 public class Flat {
     private double area;

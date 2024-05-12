@@ -7,15 +7,16 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+import back.DTO.FlatDTO;
 import back.DTO.UserDTO;
 import back.app.api.IApp;
 import back.app.api.IDBUsing;
 import back.app.api.IExecAssign;
 import back.app.api.ITMUsing;
 import back.app.api.ITransporterAssign;
-import back.domain.Factory;
-import back.domain.Room;
-import back.domain.api.IRoomCalculator;
+import back.domain.calculator.Factory;
+import back.domain.calculator.Room;
+import back.domain.calculator.api.IRoomCalculator;
 import back.infrastructure.out.executor.IExecutor;
 import back.infrastructure.out.storage.IDataBase;
 import back.infrastructure.out.websocket.ITransporter;
@@ -114,8 +115,8 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
 
             DecimalFormat decimalFormat = new DecimalFormat("#.###");
 
-            String area = decimalFormat.format( room.getArea());
-            String perimeter = decimalFormat.format( room.getPerimeter());
+            String area = decimalFormat.format(room.getArea());
+            String perimeter = decimalFormat.format(room.getPerimeter());
 
             System.out.print("Area = " + area);
             System.out.print("Perimeter = " + perimeter);
@@ -131,6 +132,15 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
             transporter.sendToClient(login, message.toString());
         });
         return "OK";
+    }
+
+    @Override
+    public String setFlatPlan(FlatDTO flat, String login) {
+        String result = db.addFlat(flat, login);
+
+        System.out.println("db result setFlatPlan: " + result);
+
+        return "{\"status\":\"" + result + "}";
     }
 
     @Override

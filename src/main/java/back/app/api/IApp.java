@@ -2,8 +2,9 @@ package back.app.api;
 
 import java.util.Map;
 
+import back.DTO.FlatDTO;
 import back.DTO.UserDTO;
-import back.domain.Room;
+import back.domain.calculator.Room;
 
 public interface IApp {
     public String login(UserDTO user);
@@ -19,4 +20,5 @@ public interface IApp {
     public void sendUpdate();
 
     public String getArea(Room room, String login);
+    public String setFlatPlan(FlatDTO flat, String login);
 }

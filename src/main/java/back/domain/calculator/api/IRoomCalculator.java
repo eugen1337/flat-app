@@ -1,6 +1,6 @@
-package back.domain.api;
+package back.domain.calculator.api;
 
-import back.domain.Room;
+import back.domain.calculator.Room;
 
 public interface IRoomCalculator {
     public Room calc(Room room);
