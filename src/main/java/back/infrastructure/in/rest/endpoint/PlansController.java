@@ -2,8 +2,9 @@ package back.infrastructure.in.rest.endpoint;
 
 import com.google.gson.Gson;
 
+import back.DTO.FlatDTO;
 import back.app.api.IApp;
-import back.domain.Room;
+import back.domain.calculator.Room;
 import back.infrastructure.utils.qualifiers.Built;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -25,24 +26,26 @@ public class PlansController {
     @Built
     private IApp app;
 
-    @Path("/rooms")
     @POST
     @Consumes("application/json")
     @Produces("text/plain")
     public Response setRoomPlan(String strJSON) {
         Gson gson = new Gson();
         try {
-            Room room = gson.fromJson(strJSON, Room.class);
-
+            System.out.println(strJSON);
+            FlatDTO flat = gson.fromJson(strJSON, FlatDTO.class);
+            System.out.println("FlatDTO sucseeds");
             String token = headers.getHeaderString(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
-
+            System.out.println("getHeaderString sucseeds");
             if (!app.validateToken(token)) {
+                System.out.println("token validate problem");
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Ошибка авторизации").build();
             }
 
             String login = app.getUserInfo(token).get("login");
-
-            String res = app.setRoomPlan(room, login);
+            System.out.println(login);
+            String res = app.setFlatPlan(flat, login);
+            System.out.println(res);
             if (res != null) {
                 return Response.ok(res).build();
             } else {

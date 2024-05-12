@@ -1,12 +1,17 @@
 package back.infrastructure.out.storage;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.naming.InitialContext;
 
+import back.DTO.FlatDTO;
+import back.DTO.RoomDTO;
 import back.DTO.UserDTO;
-import back.domain.Room;
+import back.domain.calculator.Room;
+import back.infrastructure.out.storage.entities.EFlat;
 import back.infrastructure.out.storage.entities.ERoom;
 import back.infrastructure.out.storage.entities.EUser;
 import jakarta.persistence.EntityManager;
@@ -31,7 +36,6 @@ public class DataBase implements IDataBase {
 
     @Override
     public String checkUser(UserDTO user) {
-
         try {
             Query query = entityManager
                     .createQuery("SELECT u FROM EUser u WHERE u.login = :username and u.password = :password")
@@ -111,7 +115,7 @@ public class DataBase implements IDataBase {
             roomEntity.setType(room.getType());
             roomEntity.setLevel(room.getLevel());
             // roomEntity.setWallsLength(room.getWallsLength());
-            roomEntity.setUserId(userId);
+            // roomEntity.setUserId(userId);
 
             roomEntity.setLength((int) length * 100);
             roomEntity.setWidth((int) width * 100);
@@ -132,6 +136,69 @@ public class DataBase implements IDataBase {
     @Override
     public Room getRoom(Room room, String login) {
         throw new UnsupportedOperationException("Unimplemented method 'getRoom'");
+    }
+
+    @Override
+    public String addFlat(FlatDTO flat, String login) {
+        try {
+            UserTransaction userTransaction = (UserTransaction) new InitialContext()
+                    .lookup("java:comp/UserTransaction");
+            userTransaction.begin();
+            entityManager.joinTransaction();
+            Query query = entityManager.createQuery("SELECT u FROM EUser u WHERE u.login = :username")
+                    .setParameter("username", login);
+            List<EUser> persons = query.getResultList();
+            if (persons == null || persons.isEmpty()) {
+                System.out.println("DB User doesnt exist");
+                return "User doesnt exist";
+            }
+            System.out.println(persons.size());
+            System.out.println(persons.get(0).getLogin());
+            System.out.println(persons.get(0).getPassword());
+            int userId;
+            userId = persons.get(0).getId();
+
+            System.out.println("DB userId sucseeds");
+
+            int flatId = new BigDecimal(new Date().getTime() / 100 % 1000000000).intValueExact();
+            EFlat flatEntity = new EFlat();
+            flatEntity.setId(flatId);
+            flatEntity.setUserId(userId);
+            flatEntity.setTotalArea(flat.getArea());
+            flatEntity.setTotalPerimeter(flat.getPerimeter());
+
+            entityManager.persist(flatEntity);
+            System.out.println("DB persist(flatEntity) sucseeds");
+
+            for (RoomDTO room : flat.getRooms()) {
+                double length = Arrays.stream(room.getWallsLength())
+                        .min()
+                        .getAsDouble();
+
+                double width = Arrays.stream(room.getWallsLength())
+                        .max()
+                        .getAsDouble();
+
+                ERoom roomEntity = new ERoom();
+                roomEntity.setType(room.getType());
+                roomEntity.setLevel(room.getLevel());
+                // roomEntity.setWallsLength(room.getWallsLength());
+                roomEntity.setFlatId(flatId);
+
+                roomEntity.setLength((int) length * 100);
+                roomEntity.setWidth((int) width * 100);
+                entityManager.persist(roomEntity);
+            }
+            System.out.println("DB persist(roomEntity)sucseeds");
+            entityManager.getTransaction().commit();
+            userTransaction.commit();
+            return "OK";
+
+        } catch (Exception e) {
+            entityManager.getTransaction().rollback();
+            System.out.println("Error while JPA operating: " + e.getMessage());
+        }
+        return "BAD";
     }
 
 }

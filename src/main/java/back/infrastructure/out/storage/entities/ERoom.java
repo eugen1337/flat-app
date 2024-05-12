@@ -12,6 +12,9 @@ public class ERoom implements Serializable {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @Column(name = "\"flat_id\"")
+    private int flat_id;
+
     @Column(name = "\"type\"", nullable = false)
     private String type;
 
@@ -52,23 +55,12 @@ public class ERoom implements Serializable {
         this.width = width;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getFlatId() {
+        return flat_id;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
-    }
-
-    @Column(name = "\"user_id\"")
-    private int user_id;
-
-    public int getUserId() {
-        return user_id;
-    }
-
-    public void setUserId(int user_id) {
-        this.user_id = user_id;
+    public void setFlatId(int user_id) {
+        this.flat_id = user_id;
     }
 
     public String getType() {
