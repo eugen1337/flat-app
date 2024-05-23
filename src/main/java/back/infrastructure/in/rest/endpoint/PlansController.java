@@ -34,9 +34,7 @@ public class PlansController {
         try {
             System.out.println(strJSON);
             FlatDTO flat = gson.fromJson(strJSON, FlatDTO.class);
-            System.out.println("FlatDTO sucseeds");
             String token = headers.getHeaderString(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
-            System.out.println("getHeaderString sucseeds");
             if (!app.validateToken(token)) {
                 System.out.println("token validate problem");
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Ошибка авторизации").build();

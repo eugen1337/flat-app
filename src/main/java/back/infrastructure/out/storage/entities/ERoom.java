@@ -13,53 +13,53 @@ public class ERoom implements Serializable {
     private Integer id;
 
     @Column(name = "\"flat_id\"")
-    private int flat_id;
+    private Integer flat_id;
 
     @Column(name = "\"type\"", nullable = false)
     private String type;
 
     @Column(name = "\"level\"", nullable = false)
-    private int level;
+    private Integer level;
 
     // @Column(name = "\"wallslength\"", nullable = false)
-    // private int[] wallsLength;
+    // private Integer[] wallsLength;
 
     @Column(name = "\"length\"", nullable = false)
-    private int length;
+    private Integer length;
 
     @Column(name = "\"width\"", nullable = false)
-    private int width;
+    private Integer width;
 
     @Column(name = "\"perimeter\"")
-    private double perimeter;
+    private Double perimeter;
 
     @Column(name = "\"area\"")
-    private double area;
+    private Double area;
 
     @Column(name = "\"number\"")
-    private int number;
+    private Integer number;
 
-    public int getLength() {
+    public Integer getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(Integer length) {
         this.length = length;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(Integer width) {
         this.width = width;
     }
 
-    public int getFlatId() {
+    public Integer getFlatId() {
         return flat_id;
     }
 
-    public void setFlatId(int user_id) {
+    public void setFlatId(Integer user_id) {
         this.flat_id = user_id;
     }
 
@@ -71,43 +71,43 @@ public class ERoom implements Serializable {
         this.type = type;
     }
 
-    public int getLevel() {
+    public Integer getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(Integer level) {
         this.level = level;
     }
 
-    // public int[] getWallsLength() {
+    // public Integer[] getWallsLength() {
     //     return wallsLength;
     // }
 
-    // public void setWallsLength(int[] wallsLength) {
+    // public void setWallsLength(Integer[] wallsLength) {
     //     this.wallsLength = wallsLength;
     // }
 
-    public double getPerimeter() {
+    public Double getPerimeter() {
         return perimeter;
     }
 
-    public void setPerimeter(double perimeter) {
+    public void setPerimeter(Double perimeter) {
         this.perimeter = perimeter;
     }
 
-    public double getArea() {
+    public Double getArea() {
         return area;
     }
 
-    public void setArea(double area) {
+    public void setArea(Double area) {
         this.area = area;
     }
 
-    public int getNumber() {
+    public Integer getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(Integer number) {
         this.number = number;
     }
 

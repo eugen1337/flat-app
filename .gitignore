@@ -1,6 +1,8 @@
 target/
 build_deploy_back.bat
 
+.idea/
+
 info.txt
 
 # Compiled class file

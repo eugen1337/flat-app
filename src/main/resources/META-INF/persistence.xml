@@ -5,6 +5,9 @@ http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
 
  <persistence-unit name="flat-pu" transaction-type="JTA">
   <jta-data-source>local_pg_pool</jta-data-source>
+  <class>back.infrastructure.out.storage.entities.EUser</class>
+  <class>back.infrastructure.out.storage.entities.ERoom </class>
+  <class>back.infrastructure.out.storage.entities.EFlat </class>
   <exclude-unlisted-classes>false</exclude-unlisted-classes>
  </persistence-unit>
  

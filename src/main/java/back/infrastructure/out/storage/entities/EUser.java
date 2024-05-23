@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 public class EUser implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "\"id\"", nullable = false)
     private Integer id;
 
     @Column(name = "\"login\"")
@@ -17,8 +17,8 @@ public class EUser implements Serializable {
     @Column(name = "\"password\"")
     private String password;
 
-    public int getId() {
-        return (int) this.id;
+    public Integer getId() {
+        return this.id;
     }
 
     public String getLogin() {

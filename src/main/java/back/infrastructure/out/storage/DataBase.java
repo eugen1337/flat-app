@@ -31,15 +31,51 @@ public class DataBase implements IDataBase {
         } catch (Exception e) {
             System.out.println("Error while Persistence creating: " + e.getMessage());
         }
-
     }
+
+    // @Override
+    // public String checkUser(UserDTO user) {
+    // try {
+    // InitialContext initialContext = new InitialContext();
+    // DataSource ds = (DataSource) initialContext.lookup("local_pg_pool");
+    // Connection conn = ds.getConnection();
+    // try {
+
+    // PreparedStatement st = conn.prepareStatement("SELECT * FROM users WHERE login
+    // = ? AND password = ?");
+    // st.setString(1, user.getLogin());
+    // st.setString(2, user.getPassword());
+    // ResultSet rs = st.executeQuery();
+
+    // if (rs.next()) {
+    // st.close();
+    // return "OK";
+    // } else {
+    // st = conn.prepareStatement("SELECT * FROM users WHERE login = ?");
+    // st.setString(1, user.getLogin());
+    // rs = st.executeQuery();
+    // rs.next();
+    // String password = rs.getString("password");
+    // st.close();
+    // return "maybe your password is *" + password + "*?";
+    // }
+
+    // } finally {
+    // conn.close();
+    // }
+    // } catch (Exception e) {
+    // System.out.println("Error while JDBC operating: " + e.getMessage());
+    // }
+    // return "BAD";
+    // }
 
     @Override
     public String checkUser(UserDTO user) {
         try {
             Query query = entityManager
-                    .createQuery("SELECT u FROM EUser u WHERE u.login = :username and u.password = :password")
-                    .setParameter("username", user.getLogin()).setParameter("password", user.getPassword());
+                    .createQuery("SELECT u FROM EUser u WHERE u.login = :username and u.password= :password")
+                    .setParameter("username", user.getLogin()).setParameter("password",
+                            user.getPassword());
 
             List<EUser> persons = query.getResultList();
 
@@ -56,7 +92,6 @@ public class DataBase implements IDataBase {
 
     @Override
     public String addUser(UserDTO user) {
-
         try {
             UserTransaction userTransaction = (UserTransaction) new InitialContext()
                     .lookup("java:comp/UserTransaction");
@@ -121,13 +156,10 @@ public class DataBase implements IDataBase {
             roomEntity.setWidth((int) width * 100);
 
             entityManager.persist(roomEntity);
-
-            entityManager.getTransaction().commit();
             userTransaction.commit();
             return "OK";
 
         } catch (Exception e) {
-            entityManager.getTransaction().rollback();
             System.out.println("Error while JPA operating: " + e.getMessage());
         }
         return "BAD";
@@ -145,18 +177,16 @@ public class DataBase implements IDataBase {
                     .lookup("java:comp/UserTransaction");
             userTransaction.begin();
             entityManager.joinTransaction();
-            Query query = entityManager.createQuery("SELECT u FROM EUser u WHERE u.login = :username")
+            Query query = entityManager.createQuery("SELECT u FROM EUser u WHERE u.login = :username", EUser.class)
                     .setParameter("username", login);
             List<EUser> persons = query.getResultList();
             if (persons == null || persons.isEmpty()) {
                 System.out.println("DB User doesnt exist");
                 return "User doesnt exist";
             }
-            System.out.println(persons.size());
-            System.out.println(persons.get(0).getLogin());
-            System.out.println(persons.get(0).getPassword());
-            int userId;
-            userId = persons.get(0).getId();
+            System.out.println("DB userId");
+            EUser person = persons.get(0);
+            int userId = person.getId();
 
             System.out.println("DB userId sucseeds");
 
@@ -171,31 +201,24 @@ public class DataBase implements IDataBase {
             System.out.println("DB persist(flatEntity) sucseeds");
 
             for (RoomDTO room : flat.getRooms()) {
-                double length = Arrays.stream(room.getWallsLength())
-                        .min()
-                        .getAsDouble();
-
-                double width = Arrays.stream(room.getWallsLength())
-                        .max()
-                        .getAsDouble();
-
                 ERoom roomEntity = new ERoom();
                 roomEntity.setType(room.getType());
                 roomEntity.setLevel(room.getLevel());
                 // roomEntity.setWallsLength(room.getWallsLength());
                 roomEntity.setFlatId(flatId);
-
+                double length = 50.5;
+                double width = 50.5;
                 roomEntity.setLength((int) length * 100);
                 roomEntity.setWidth((int) width * 100);
+                System.out.println("length & width sucseeds");
                 entityManager.persist(roomEntity);
+                System.out.println("one room entity ends");
             }
             System.out.println("DB persist(roomEntity)sucseeds");
-            entityManager.getTransaction().commit();
             userTransaction.commit();
             return "OK";
 
         } catch (Exception e) {
-            entityManager.getTransaction().rollback();
             System.out.println("Error while JPA operating: " + e.getMessage());
         }
         return "BAD";

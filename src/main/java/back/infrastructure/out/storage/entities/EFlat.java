@@ -2,24 +2,26 @@ package back.infrastructure.out.storage.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "\"flats\"")
 public class EFlat {
+    @Id
     @Column(name = "id", nullable = false)
-    private int id;
+    private Integer id;
 
     @Column(name = "\"user_id\"")
-    private int userId;
+    private Integer userId;
 
     @Column(name = "\"total_area\"", nullable = false)
-    private double totalArea;
+    private Double totalArea;
 
     @Column(name = "\"total_perimeter\"", nullable = false)
-    private double totalPerimeter;
+    private Double totalPerimeter;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -27,7 +29,7 @@ public class EFlat {
         this.id = id;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
@@ -35,7 +37,7 @@ public class EFlat {
         this.userId = userId;
     }
 
-    public double getTotalArea() {
+    public Double getTotalArea() {
         return totalArea;
     }
 
@@ -43,7 +45,7 @@ public class EFlat {
         this.totalArea = totalArea;
     }
 
-    public double getTotalPerimeter() {
+    public Double getTotalPerimeter() {
         return totalPerimeter;
     }
 
