@@ -20,5 +20,11 @@ public interface IApp {
     public void sendUpdate();
 
     public String getArea(Room room, String login);
+
     public String setFlatPlan(FlatDTO flat, String login);
+
+    String getFlat(String login, int flatId);
+
+    String getFlatList(String login);
+
 }

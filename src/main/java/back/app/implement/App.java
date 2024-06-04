@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import back.DTO.FlatDTO;
+import back.DTO.RoomDTO;
 import back.DTO.UserDTO;
 import back.app.api.IApp;
 import back.app.api.IDBUsing;
@@ -144,6 +145,75 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
     }
 
     @Override
+    public String getFlat(String login, int flatId) {
+        FlatDTO flatDTO = db.getFlat(login, flatId);
+        if (flatDTO == null)
+            return "BAD";
+
+        StringBuilder message = new StringBuilder();
+
+        message.append("{ \"totalArea\":\"");
+        message.append(flatDTO.getArea());
+        message.append("\",");
+        message.append("\"totalPerimeter\":\"");
+        message.append(flatDTO.getArea());
+        message.append("\",");
+        message.append("{ \"rooms\":[");
+
+        for (RoomDTO room : flatDTO.getRooms()) {
+            message.append("{ \"area\":\"");
+            message.append(room.getArea());
+            message.append("\",");
+
+            message.append("\"perimeter\":\"");
+            message.append(room.getPerimeter());
+            message.append("\",");
+
+            message.append("\"type\":\"");
+            message.append(room.getType());
+            message.append("\",");
+
+            message.append("\"length\":\"");
+            message.append(room.getWallsLength()[0]);
+            message.append("\",");
+
+            message.append("\"width\":\"");
+            message.append(room.getWallsLength()[3]);
+            message.append("\"");
+
+            message.append("},");
+        }
+
+        message.deleteCharAt(message.length());
+        message.append("]}");
+
+        System.out.println("App getFlat: " + message.toString());
+
+        return message.toString();
+    }
+
+    @Override
+    public String getFlatList(String login) {
+        StringBuilder message = new StringBuilder();
+        message.append("{ \"ids\": [");
+        int count = 0;
+        for (int id : db.getFlatList(login)) {
+            count += 1;
+            System.out.println("App getFlatList ids: " + id);
+            message.append("\"");
+            message.append(id);
+            message.append("\",");
+        }
+        if (count > 0)
+            message.deleteCharAt(message.length() - 1);
+        message.append("]}");
+
+        System.out.println("App getFlatList: " + message.toString());
+
+        return message.toString();
+    }
+
+    @Override
     public void useTM(ITokenManager tm) {
         this.tm = tm;
     }
@@ -162,5 +232,4 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
     public void useExecutor(IExecutor executor) {
         this.executor = executor;
     }
-
 }

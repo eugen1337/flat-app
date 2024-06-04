@@ -1,6 +1,7 @@
 package back.infrastructure.out.storage;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -206,8 +207,8 @@ public class DataBase implements IDataBase {
                 roomEntity.setLevel(room.getLevel());
                 // roomEntity.setWallsLength(room.getWallsLength());
                 roomEntity.setFlatId(flatId);
-                double length = 50.5;
-                double width = 50.5;
+                double length = room.getWallsLength()[0];
+                double width = room.getWallsLength()[3];
                 roomEntity.setLength((int) length * 100);
                 roomEntity.setWidth((int) width * 100);
                 System.out.println("length & width sucseeds");
@@ -216,7 +217,7 @@ public class DataBase implements IDataBase {
             }
             System.out.println("DB persist(roomEntity)sucseeds");
             userTransaction.commit();
-            return "OK";
+            return Integer.toString(flatId);
 
         } catch (Exception e) {
             System.out.println("Error while JPA operating: " + e.getMessage());
@@ -224,25 +225,96 @@ public class DataBase implements IDataBase {
         return "BAD";
     }
 
+    @Override
+    public FlatDTO getFlat(String login, int flatId) {
+        try {
+            UserTransaction userTransaction = (UserTransaction) new InitialContext()
+                    .lookup("java:comp/UserTransaction");
+            userTransaction.begin();
+            entityManager.joinTransaction();
+
+            Query query = entityManager.createQuery("SELECT u FROM EFlat u WHERE u.id = :flat_id", EFlat.class)
+                    .setParameter("flat_id", flatId);
+
+            List<EFlat> flats = query.getResultList();
+            if (flats == null || flats.isEmpty()) {
+                System.out.println("DB Flat doesnt exist");
+                return null;
+            }
+            EFlat flat = flats.get(0);
+
+            FlatDTO flatDTO = new FlatDTO();
+            flatDTO.setArea(flat.getTotalArea());
+            flatDTO.setPerimeter(flat.getTotalPerimeter());
+
+            query = entityManager.createQuery("SELECT u FROM ERoom u WHERE u.flat_id = :flat_id", EFlat.class)
+                    .setParameter("flat_id", flatId);
+
+            List<ERoom> rooms = query.getResultList();
+            if (flats == null || flats.isEmpty()) {
+                System.out.println("DB Rooms doesnt exist");
+                return null;
+            }
+
+            RoomDTO[] roomDTOs = new RoomDTO[rooms.size()];
+
+            for (ERoom room : rooms) {
+                RoomDTO roomDTO = new RoomDTO();
+
+                roomDTO.setArea(room.getArea());
+                roomDTO.setLevel(room.getLevel());
+                roomDTO.setPerimeter(room.getPerimeter());
+                roomDTO.setWallsLength(
+                        new double[] { room.getLength(), room.getLength(), room.getWidth(), room.getWidth() });
+                roomDTO.setType(room.getType());
+            }
+            flatDTO.setRooms(roomDTOs);
+            System.out.println("DB  flatDTO.setRooms(roomDTOs); sucseeds");
+            return flatDTO;
+
+        } catch (Exception e) {
+            System.out.println("Error while JPA operating: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Integer> getFlatList(String login) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        try {
+            UserTransaction userTransaction = (UserTransaction) new InitialContext()
+                    .lookup("java:comp/UserTransaction");
+            userTransaction.begin();
+            entityManager.joinTransaction();
+            Query query = entityManager.createQuery("SELECT u FROM EUser u WHERE u.login = :username", EUser.class)
+                    .setParameter("username", login);
+            @SuppressWarnings("unchecked")
+            List<EUser> persons = query.getResultList();
+            if (persons == null || persons.isEmpty()) {
+                System.out.println("DB User doesnt exist");
+                return null;
+            }
+            EUser person = persons.get(0);
+            int userId = person.getId();
+
+            query = entityManager.createQuery("SELECT flat FROM EFlat flat WHERE flat.userId = :id", EFlat.class)
+                    .setParameter("id", userId);
+
+            @SuppressWarnings("unchecked")
+            List<EFlat> flats = query.getResultList();
+            if (flats == null || flats.isEmpty()) {
+                System.out.println("DB Flat doesnt exist or empty");
+                return ids;
+            }
+
+            for (EFlat flat : flats) {
+                ids.add(flat.getId());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error while JPA operating: " + e.getMessage());
+        }
+        return ids;
+    }
+
 }
-
-// private int retrieveRowsCountByJPA() throws Exception {
-// try {
-// userTransaction.begin();
-// entityManager.joinTransaction();
-
-// List<EPerson> persons = entityManager.createQuery("SELECT p FROM EPerson p",
-// EPerson.class).getResultList();
-
-// /*
-// * EPerson personFind = entityManager.find(EPerson.class,new Integer(2));
-// * personFind.setPersonName("Person_Find");
-// * entityManager.merge(personFind);
-// *
-// * EPerson personPersist = new EPerson();
-// * //personPersist.setPersonID(new Integer(3));
-// * personPersist.setPersonName("Person_Persist");
-// * entityManager.persist(personPersist);
-// */
-
-// userTransaction.commit();

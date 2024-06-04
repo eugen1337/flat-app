@@ -83,4 +83,47 @@ public class PlansController {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
+
+    @GET
+    public Response getFlatList() {
+        try {
+            String token = headers.getHeaderString(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+
+            if (!app.validateToken(token)) {
+                return Response.status(Response.Status.UNAUTHORIZED).entity("Ошибка авторизации").build();
+            }
+
+            String login = app.getUserInfo(token).get("login");
+            String res = app.getFlatList(login);
+            if (res != null) {
+                return Response.ok(res).build();
+            } else {
+                throw new Exception("invalid");
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @Path("/flats")
+    @GET
+    public Response getFlat(@QueryParam("id") String id) {
+        try {
+            String token = headers.getHeaderString(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+
+            if (!app.validateToken(token)) {
+                return Response.status(Response.Status.UNAUTHORIZED).entity("Ошибка авторизации").build();
+            }
+
+            String login = app.getUserInfo(token).get("login");
+            String res = app.getFlat(login, Integer.parseInt(id));
+            if (res != null) {
+                return Response.ok(res).build();
+            } else {
+                throw new Exception("invalid");
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
 }
