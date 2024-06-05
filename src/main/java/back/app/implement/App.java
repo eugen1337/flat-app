@@ -173,6 +173,13 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
             message.append(room.getPerimeter());
             message.append("\",");
 
+            message.append("\"coords\":[\"");
+            message.append(room.getCoords()[0]);
+            message.append("\",\"");
+            message.append(room.getCoords()[1]);
+            message.append("\"]");
+            message.append(",");
+
             message.append("\"type\":\"");
             message.append(room.getType());
             message.append("\",");

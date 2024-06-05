@@ -36,6 +36,28 @@ public class ERoom implements Serializable {
     @Column(name = "\"number\"")
     private Integer number;
 
+    @Column(name = "\"x_coord\"")
+    private Integer x_coord;
+
+    @Column(name = "\"y_coord\"")
+    private Integer y_coord;
+
+    public Integer getX_coord() {
+        return x_coord;
+    }
+
+    public void setX_coord(Integer x_coord) {
+        this.x_coord = x_coord;
+    }
+
+    public Integer getY_coord() {
+        return y_coord;
+    }
+
+    public void setY_coord(Integer y_coord) {
+        this.y_coord = y_coord;
+    }
+
     public Integer getLength() {
         return length;
     }

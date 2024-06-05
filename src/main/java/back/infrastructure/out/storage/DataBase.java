@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import back.DTO.FlatDTO;
 import back.DTO.RoomDTO;
@@ -18,6 +20,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
 
 public class DataBase implements IDataBase {
@@ -144,8 +151,8 @@ public class DataBase implements IDataBase {
             // roomEntity.setWallsLength(room.getWallsLength());
             // roomEntity.setUserId(userId);
 
-            roomEntity.setLength((int) room.getLength() * 100);
-            roomEntity.setWidth((int) room.getWidth() * 100);
+            roomEntity.setLength((int) room.getLength());
+            roomEntity.setWidth((int) room.getWidth());
 
             entityManager.persist(roomEntity);
             userTransaction.commit();
@@ -160,6 +167,35 @@ public class DataBase implements IDataBase {
     @Override
     public Room getRoom(Room room, String login) {
         throw new UnsupportedOperationException("Unimplemented method 'getRoom'");
+    }
+
+    private void saveRoom(RoomDTO room, int flatId)
+            throws NamingException, NotSupportedException, SystemException, SecurityException, IllegalStateException,
+            RollbackException, HeuristicMixedException, HeuristicRollbackException {
+        UserTransaction userTransaction = (UserTransaction) new InitialContext()
+                .lookup("java:comp/UserTransaction");
+        userTransaction.begin();
+        entityManager.joinTransaction();
+
+        ERoom roomEntity = new ERoom();
+        roomEntity.setX_coord(room.getCoords()[0]);
+        roomEntity.setY_coord(room.getCoords()[1]);
+
+        roomEntity.setType(room.getType());
+        roomEntity.setLevel(room.getLevel());
+        roomEntity.setArea(room.getArea());
+        roomEntity.setPerimeter(room.getPerimeter());
+        roomEntity.setFlatId(flatId);
+
+        double length = room.getLength();
+        double width = room.getWidth();
+        roomEntity.setLength((int) length);
+        roomEntity.setWidth((int) width);
+
+        entityManager.persist(roomEntity);
+        System.out.println("DB persist(roomEntity)sucseeds");
+        userTransaction.commit();
+
     }
 
     @Override
@@ -182,7 +218,16 @@ public class DataBase implements IDataBase {
 
             System.out.println("DB userId sucseeds");
 
-            int flatId = new BigDecimal(new Date().getTime() / 100 % 1000000000).intValueExact();
+            // int flatId = new BigDecimal(new Date().getTime() / 100 %
+            // 1000000000).intValueExact();
+
+            UUID idOne = UUID.randomUUID();
+            String str = "" + idOne;
+            int uid = str.hashCode();
+            String filterStr = "" + uid;
+            str = filterStr.replaceAll("-", "");
+            Integer flatId = Integer.parseInt(str);
+
             EFlat flatEntity = new EFlat();
             flatEntity.setId(flatId);
             flatEntity.setUserId(userId);
@@ -190,26 +235,30 @@ public class DataBase implements IDataBase {
             flatEntity.setTotalPerimeter(flat.getPerimeter());
 
             entityManager.persist(flatEntity);
+            userTransaction.commit();
             System.out.println("DB persist(flatEntity) sucseeds");
 
             for (RoomDTO room : flat.getRooms()) {
-                ERoom roomEntity = new ERoom();
-                roomEntity.setType(room.getType());
-                roomEntity.setLevel(room.getLevel());
-                roomEntity.setArea(room.getArea());
-                roomEntity.setPerimeter(room.getPerimeter());
-                // roomEntity.setWallsLength(room.getWallsLength());
-                roomEntity.setFlatId(flatId);
-                double length = room.getLength();
-                double width = room.getWidth();
-                roomEntity.setLength((int) length * 100);
-                roomEntity.setWidth((int) width * 100);
-                System.out.println("length & width sucseeds");
-                entityManager.persist(roomEntity);
-                System.out.println("one room entity ends");
+                saveRoom(room, flatId);
+                // ERoom roomEntity = new ERoom();
+                // roomEntity.setX_coord(room.getCoords()[0]);
+                // roomEntity.setY_coord(room.getCoords()[1]);
+
+                // roomEntity.setType(room.getType());
+                // roomEntity.setLevel(room.getLevel());
+                // roomEntity.setArea(room.getArea());
+                // roomEntity.setPerimeter(room.getPerimeter());
+                // roomEntity.setFlatId(flatId);
+
+                // double length = room.getLength();
+                // double width = room.getWidth();
+                // roomEntity.setLength((int) length);
+                // roomEntity.setWidth((int) width);
+
+                // entityManager.persist(roomEntity);
+                // System.out.println("DB persist(roomEntity)sucseeds");
             }
-            System.out.println("DB persist(roomEntity)sucseeds");
-            userTransaction.commit();
+
             return Integer.toString(flatId);
 
         } catch (Exception e) {
@@ -254,6 +303,8 @@ public class DataBase implements IDataBase {
             int count = 0;
             for (ERoom room : rooms) {
                 RoomDTO roomDTO = new RoomDTO();
+
+                roomDTO.setCoords(new int[] { room.getX_coord(), room.getY_coord() });
 
                 roomDTO.setArea(room.getArea());
                 roomDTO.setLevel(room.getLevel());
