@@ -21,9 +21,6 @@ public class ERoom implements Serializable {
     @Column(name = "\"level\"", nullable = false)
     private Integer level;
 
-    // @Column(name = "\"wallslength\"", nullable = false)
-    // private Integer[] wallsLength;
-
     @Column(name = "\"length\"", nullable = false)
     private Integer length;
 
@@ -78,14 +75,6 @@ public class ERoom implements Serializable {
     public void setLevel(Integer level) {
         this.level = level;
     }
-
-    // public Integer[] getWallsLength() {
-    //     return wallsLength;
-    // }
-
-    // public void setWallsLength(Integer[] wallsLength) {
-    //     this.wallsLength = wallsLength;
-    // }
 
     public Double getPerimeter() {
         return perimeter;

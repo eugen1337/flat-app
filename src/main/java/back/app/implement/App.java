@@ -147,8 +147,10 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
     @Override
     public String getFlat(String login, int flatId) {
         FlatDTO flatDTO = db.getFlat(login, flatId);
-        if (flatDTO == null)
+        if (flatDTO == null) {
+            System.out.println("flatDTO == null");
             return "BAD";
+        }
 
         StringBuilder message = new StringBuilder();
 
@@ -158,9 +160,11 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
         message.append("\"totalPerimeter\":\"");
         message.append(flatDTO.getArea());
         message.append("\",");
-        message.append("{ \"rooms\":[");
+        message.append("\"rooms\":[");
 
+        int count = 0;
         for (RoomDTO room : flatDTO.getRooms()) {
+            count += 1;
             message.append("{ \"area\":\"");
             message.append(room.getArea());
             message.append("\",");
@@ -174,17 +178,17 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
             message.append("\",");
 
             message.append("\"length\":\"");
-            message.append(room.getWallsLength()[0]);
+            message.append(room.getLength());
             message.append("\",");
 
             message.append("\"width\":\"");
-            message.append(room.getWallsLength()[3]);
+            message.append(room.getWidth());
             message.append("\"");
 
             message.append("},");
         }
-
-        message.deleteCharAt(message.length());
+        if (count > 0)
+            message.deleteCharAt(message.length() - 1);
         message.append("]}");
 
         System.out.println("App getFlat: " + message.toString());
@@ -199,7 +203,6 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
         int count = 0;
         for (int id : db.getFlatList(login)) {
             count += 1;
-            System.out.println("App getFlatList ids: " + id);
             message.append("\"");
             message.append(id);
             message.append("\",");
@@ -207,8 +210,6 @@ public class App implements IApp, IDBUsing, ITMUsing, ITransporterAssign, IExecA
         if (count > 0)
             message.deleteCharAt(message.length() - 1);
         message.append("]}");
-
-        System.out.println("App getFlatList: " + message.toString());
 
         return message.toString();
     }

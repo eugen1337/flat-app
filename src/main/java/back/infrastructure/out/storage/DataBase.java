@@ -2,7 +2,6 @@ package back.infrastructure.out.storage;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -139,22 +138,14 @@ public class DataBase implements IDataBase {
 
             int userId = persons.get(0).getId();
 
-            double length = Arrays.stream(room.getWallsLength())
-                    .min()
-                    .getAsDouble();
-
-            double width = Arrays.stream(room.getWallsLength())
-                    .max()
-                    .getAsDouble();
-
             ERoom roomEntity = new ERoom();
             roomEntity.setType(room.getType());
             roomEntity.setLevel(room.getLevel());
             // roomEntity.setWallsLength(room.getWallsLength());
             // roomEntity.setUserId(userId);
 
-            roomEntity.setLength((int) length * 100);
-            roomEntity.setWidth((int) width * 100);
+            roomEntity.setLength((int) room.getLength() * 100);
+            roomEntity.setWidth((int) room.getWidth() * 100);
 
             entityManager.persist(roomEntity);
             userTransaction.commit();
@@ -205,10 +196,12 @@ public class DataBase implements IDataBase {
                 ERoom roomEntity = new ERoom();
                 roomEntity.setType(room.getType());
                 roomEntity.setLevel(room.getLevel());
+                roomEntity.setArea(room.getArea());
+                roomEntity.setPerimeter(room.getPerimeter());
                 // roomEntity.setWallsLength(room.getWallsLength());
                 roomEntity.setFlatId(flatId);
-                double length = room.getWallsLength()[0];
-                double width = room.getWallsLength()[3];
+                double length = room.getLength();
+                double width = room.getWidth();
                 roomEntity.setLength((int) length * 100);
                 roomEntity.setWidth((int) width * 100);
                 System.out.println("length & width sucseeds");
@@ -242,32 +235,36 @@ public class DataBase implements IDataBase {
                 return null;
             }
             EFlat flat = flats.get(0);
-
+            System.out.println("flats.get succeds");
             FlatDTO flatDTO = new FlatDTO();
             flatDTO.setArea(flat.getTotalArea());
             flatDTO.setPerimeter(flat.getTotalPerimeter());
 
-            query = entityManager.createQuery("SELECT u FROM ERoom u WHERE u.flat_id = :flat_id", EFlat.class)
+            query = entityManager.createQuery("SELECT u FROM ERoom u WHERE u.flat_id = :flat_id", ERoom.class)
                     .setParameter("flat_id", flatId);
 
             List<ERoom> rooms = query.getResultList();
-            if (flats == null || flats.isEmpty()) {
+            if (rooms == null || rooms.isEmpty()) {
                 System.out.println("DB Rooms doesnt exist");
                 return null;
             }
 
             RoomDTO[] roomDTOs = new RoomDTO[rooms.size()];
-
+            System.out.println("DB before flatDTO.setRooms(roomDTOs)");
+            int count = 0;
             for (ERoom room : rooms) {
                 RoomDTO roomDTO = new RoomDTO();
 
                 roomDTO.setArea(room.getArea());
                 roomDTO.setLevel(room.getLevel());
                 roomDTO.setPerimeter(room.getPerimeter());
-                roomDTO.setWallsLength(
-                        new double[] { room.getLength(), room.getLength(), room.getWidth(), room.getWidth() });
+                roomDTO.setLength(room.getLength());
+                roomDTO.setWidth(room.getWidth());
                 roomDTO.setType(room.getType());
+                roomDTOs[count] = roomDTO;
+                count += 1;
             }
+            System.out.println(count);
             flatDTO.setRooms(roomDTOs);
             System.out.println("DB  flatDTO.setRooms(roomDTOs); sucseeds");
             return flatDTO;
